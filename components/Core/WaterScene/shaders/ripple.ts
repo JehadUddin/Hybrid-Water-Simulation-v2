@@ -22,6 +22,7 @@ uniform float uStrength;
 uniform float uRadius;
 uniform float uDamping;
 uniform float uViscosity; // New uniform for viscosity
+uniform float uSpeed; // New uniform for speed
 uniform bool uMouseDown;
 uniform bool uGentleImpact;
 uniform vec3 uImpacts[MAX_IMPACTS];
@@ -44,7 +45,10 @@ void main() {
 
     // Height Laplacian (for acceleration)
     float laplacian = (n.r + s.r + e.r + w.r) - 4.0 * height;
-    vel += laplacian * 0.5; // Spring force
+    
+    // Apply speed (clamped for stability)
+    float speed = clamp(uSpeed, 0.01, 0.49);
+    vel += laplacian * speed; 
 
     // Velocity Laplacian (for viscosity/damping)
     float vel_laplacian = (n.g + s.g + e.g + w.g) - 4.0 * vel;

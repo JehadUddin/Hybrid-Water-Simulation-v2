@@ -279,6 +279,8 @@ const WaterScene: React.FC<WaterSceneProps> = ({ config, initialCameraState, sce
             uStrength: { value: configRef.current.rippleStrength },
             uRadius: { value: configRef.current.rippleRadius },
             uDamping: { value: configRef.current.rippleDamping },
+            uSpeed: { value: configRef.current.rippleSpeed },
+            uViscosity: { value: configRef.current.rippleViscosity },
             uMouseDown: { value: false },
             uImpacts: { value: Array(MAX_IMPACTS).fill(new THREE.Vector3()) },
             uImpactCount: { value: 0 },
@@ -452,6 +454,16 @@ const WaterScene: React.FC<WaterSceneProps> = ({ config, initialCameraState, sce
 
         // --- IMPACT MANAGEMENT ---
         discreteImpactsRef.current = discreteImpactsRef.current.filter(i => time - i.startTime < 5.0);
+
+        // --- UPDATE SIM UNIFORMS ---
+        if (simMat) {
+            simMat.uniforms.uStrength.value = currentConfig.rippleStrength;
+            simMat.uniforms.uRadius.value = currentConfig.rippleRadius;
+            simMat.uniforms.uDamping.value = currentConfig.rippleDamping;
+            simMat.uniforms.uSpeed.value = currentConfig.rippleSpeed;
+            simMat.uniforms.uViscosity.value = currentConfig.rippleViscosity;
+            simMat.uniforms.uGentleImpact.value = currentConfig.gentleImpact;
+        }
 
         // --- RIPPLE STEP (Ping-Pong) ---
         if (simSceneRef.current && simCameraRef.current && renderTargetA.current && renderTargetB.current) {
